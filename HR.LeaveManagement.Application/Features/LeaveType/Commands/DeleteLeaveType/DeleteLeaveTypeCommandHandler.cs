@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HR.LeaveManagement.Application.Contracts.Persistence;
+using HR.LeaveManagement.Application.Exceptions;
 using MediatR;
 
 namespace HR.LeaveManagement.Application.Features.LeaveType.Commands.DeleteLeaveType;
@@ -10,7 +11,8 @@ public class DeleteLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeReposit
 
     public async Task<Unit> Handle(DeleteLeaveTypeCommand request, CancellationToken cancellationToken)
     {
-        var leaveTypeToDelete = await _leaveTypeRepository.GetLeaveByIdAsync(request.Id);
+        var leaveTypeToDelete = await _leaveTypeRepository.GetLeaveByIdAsync(request.Id)
+            ?? throw new NotFoundException(nameof(LeaveType), request.Id);
 
         await _leaveTypeRepository.DeleteAsync(leaveTypeToDelete);
 
